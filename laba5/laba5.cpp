@@ -1,63 +1,89 @@
-#include <stdio.h>
-#include <stdlib.h>
-#define _CRT_SECURE_NO_WARNINGS
-#include <time.h>
+#include <iostream>
 
-void grafinit(char** g, int size) {
+class Graf {
+public:
+	char** mass;
+	int size;
+	int grafsize = 0;
+	char** incid;
 
-	for (int i = 0; i < size; i++) {
-		for (int j = i; j < size; j++) {
-			if (i == j) {
-				g[i][j] = 0;
-				continue;
+	void init() {
+		mass = new char* [size];
+		for (int i = 0; i < size; i++) {
+			mass[i] = new char[size];
+		}
+		for (int i = 0; i < size; i++) {
+			for (int j = i; j < size; j++) {
+				if (i == j) mass[i][j] = 0;
+				else mass[i][j] = mass[j][i] = rand() % 2;
+				grafsize += mass[i][j];
 			}
-			g[i][j] = g[j][i] = rand() % 2;
+		}
+		incid = new char* [size];
+		for (int i = 0; i < size; i++) {
+			incid[i] = new char[grafsize];
+		}
+		int s = 0;
+		for (int i = 0; i < size; i++) {
+			for (int j = i; j < size; j++) {
+				if (mass[i][j] == 0) continue;
+				for (int k = 0; k < size; k++) (k == i) || (k == j) ? incid[k][s] = 1 : incid[k][s] = 0;
+				s++;
+			}
 		}
 	}
-}
+	void print() {
+		std::cout << std::endl;
+		for (int i = 0; i < size; i++) {
+			int count = 0;
+			for (int j = 0; j < size; j++) {
+				if (i == j) std::cout << "\033[90m#\033[0m ";
+				else std::cout << (int)mass[i][j] << " ";
+				count += mass[i][j];
+			}
+			if (count == 0) std::cout << "Isolated";
+			if (count == 1) std::cout << "Alone";
+			if (count == size - 1) std::cout << "Dominating";
 
-void printg(char** g, int size) {
-	for (int i = 0; i < size; i++) {
-		int count = 0;
-		for (int j = 0; j < size; j++) {
-			if (i == j) printf("# "); else printf("%i ", g[i][j]);
-			count += g[i][j];
+			std::cout << std::endl;
 		}
-		if (count == 0) printf("Isolated");	else
-			if (count == 1) printf("Alone"); else
-				if (count == size - 1) printf("Dominating"); else
-					printf("Normal");
-		printf("\n");
+		std::cout << "Graf size:" << grafsize << std::endl;
 	}
-}
-
-int grafsize(char** g, int size) {
-	int count = 0;
-	for (int i = 0; i < size; i++) {
-		for (int j = i; j < size; j++) {
-			count += g[i][j];
+	void printincid() {
+		std::cout << std::endl;
+		for (int i = 0; i < size; i++) {
+			int count = 0;
+			for (int j = 0; j < grafsize; j++) {
+				std::cout << (int)incid[i][j] << " ";
+				count += incid[i][j];
+			}
+			if (count == 0) std::cout << "Isolated";
+			if (count == 1) std::cout << "Alone";
+			if (count == size - 1) std::cout << "Dominating";
+			std::cout << std::endl;
 		}
 	}
-	return(count);
-}
+	void clear() {
+		for (int i = 0; i < size; i++) {
+			delete(mass[i]);
+			delete(incid[i]);
+		}
+		delete(mass);
+		delete(incid);
+	}
+};
 
-//int
 
 int main() {
+	Graf graf;
+	srand(time(NULL)); 
 
-	srand(time(NULL));
-	int size;
-	printf("Enter size:");
-	scanf("%i", &size);
-	char** graf = { new char* [size] };
-	for (int i = 0; i < size; i++) {
-		graf[i] = new char[size];
-	}
-	grafinit(graf, size);
-	printg(graf, size);
-	printf("Graf size is: %i\n", grafsize(graf, size));
-
-	char** m;
+	std::cout << "Enter graf size: ";
+	std::cin >> graf.size;
+	graf.init();
+	graf.print();
+	graf.printincid();
 
 
+	graf.clear();
 }
