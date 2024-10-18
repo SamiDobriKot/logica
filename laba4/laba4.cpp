@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
+#include <locale.h>
+
 
 struct Node {
 	int data;
@@ -13,7 +15,7 @@ struct Node* root;
 
 struct Node* CreateTree(struct Node* root, struct Node* r, int data)
 {
-	if (r == NULL){
+	if (r == NULL) {
 
 		r = (struct Node*)malloc(sizeof(struct Node));
 		if (r == NULL)
@@ -31,7 +33,7 @@ struct Node* CreateTree(struct Node* root, struct Node* r, int data)
 		else root->right = r;
 		return r;
 	}
-	//if (data == r->data) return(root); // **без повторений**
+	//if (data == r->data) return(root); // **безповторений**
 	if (data > r->data)
 		CreateTree(r, r->left, data);
 	else
@@ -60,10 +62,10 @@ void print_tree(struct Node* r, int l)
 
 struct Node* find(struct Node* r, int d) {
 
-	if (r == NULL){
+	if (r == NULL) {
 		return(NULL);
 	}
-	if (r->data == d) return(r); 
+	if (r->data == d) return(r);
 	if (r->data > d) {
 		find(r->right, d);
 	}
@@ -76,16 +78,40 @@ int findhowmany(struct Node* r, int d) {
 	r = find(r, d);
 	if (r == NULL) return(0);
 	int num = 1;
-	while (r->right->data == d) {
+	while (r->right != NULL) {
 		num++;
-		r = r->right;
+		r = find(r->right, d);
 	}
 	return(num);
+}
+
+struct Node* findlast(struct Node* r, int d, int* l) {
+	if (r == NULL) {
+		l = 0;
+		return(NULL);
+	}
+	if (r->data == d) {
+		*l = *l + 1;
+		r = findlast(r->right, d, l);
+		return(r);
+
+	}
+	if (r->data > d) {
+		*l = *l + 1;
+		findlast(r->right, d, l);
+		return(r);
+	}
+	else {
+		*l = *l + 1;
+		findlast(r->left, d, l);
+		return(r);
+	}
 }
 
 int main()
 {
 	system("chcp 1251");
+	setlocale(LC_ALL, "Russian");
 	int D, start = 1;
 
 	root = NULL;
@@ -106,11 +132,11 @@ int main()
 
 	print_tree(root, 0);
 
-	printf("Выберите что вы хотите сделать: \nНайти ветку по числу - 1\nНайти количество вхождений числа - 2\n");
+	printf("Выберите что вы хотите сделать: \nНайти ветку по числу - 1\nНайти на каком самом низком уровне число - 2\nНайти количество вхождений числа - 3\n");
 	char mode = _getch();
 	printf("Введите число: ");
 	switch (mode) {
-	case '1':{
+	case '1': {
 		scanf("%d", &D);
 		struct Node* temp = find(root, D);
 		if (temp != NULL) {
@@ -122,9 +148,23 @@ int main()
 		}
 		break;
 	}
+	case '2': {
+		scanf("%i", &D);
+		int l = 0;
+		if (findlast(root, D, &l) == NULL) {
+			printf("Число не найдено");
+			return(0);
+		}
+		printf("Число %i находится в %i уровне", D, l);
+
+		break;
+	}
 	default: {
 		scanf("%d", &D);
 		printf("Количество вхождений числа: %i", findhowmany(root, D));
 	}
 	}
+	getchar();
+	getchar();
 }
+//7 6 8 6 7 3 8 9 1 6 1 7 1 4 1 3 1 -1
