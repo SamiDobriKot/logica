@@ -1,11 +1,16 @@
 #include <iostream>
+#include <time.h>
 
 class Graf {
 public:
 	char** mass;
 	int size;
-	int grafsize = 0;
+	int grafsize;
 	char** incid;
+
+	Graf() {
+		grafsize = 0;
+	};
 
 	void init() {
 		mass = new char* [size];
@@ -37,10 +42,11 @@ public:
 		for (int i = 0; i < size; i++) {
 			int count = 0;
 			for (int j = 0; j < size; j++) {
-				if (i == j) std::cout << "\033[90m#\033[0m ";
+				if (i == j) std::cout << "# ";
 				else std::cout << (int)mass[i][j] << " ";
 				count += mass[i][j];
 			}
+			std::cout << ":" << count << " ";
 			if (count == 0) std::cout << "Isolated";
 			if (count == 1) std::cout << "Alone";
 			if (count == size - 1) std::cout << "Dominating";
@@ -57,6 +63,7 @@ public:
 				std::cout << (int)incid[i][j] << " ";
 				count += incid[i][j];
 			}
+			std::cout << ":" << count << " ";
 			if (count == 0) std::cout << "Isolated";
 			if (count == 1) std::cout << "Alone";
 			if (count == size - 1) std::cout << "Dominating";
