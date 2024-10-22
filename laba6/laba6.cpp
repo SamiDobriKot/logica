@@ -1,4 +1,5 @@
 #include <iostream>
+#include <time.h>
 using namespace std;
 
 class List {
@@ -41,10 +42,14 @@ class Graf {
 public:
 	char** mass;
 	int size;
-	int grafsize = 0;
+	int grafsize;
 	char** incid;
 	List* list;
 
+	Graf() {
+		grafsize = 0;
+	}
+	Graf operator=(Graf &other);
 	void init(char yesno = 1) {
 		mass = new char* [size];
 		for (int i = 0; i < size; i++) {
@@ -84,7 +89,7 @@ public:
 		for (int i = 0; i < size; i++) {
 	//		int count = 0;
 			for (int j = 0; j < size; j++) {
-				if (i == j) cout << "\033[90m#\033[0m ";
+				if (i == j) cout << "# ";
 				else cout << (int)mass[i][j] << " ";
 	//			count += mass[i][j];
 			}
@@ -122,38 +127,41 @@ public:
 	}
 };
 
-void otojd(char** g1, char** g2, char** g3, int size){
-	for (int i = 0; i < size; i++) {
-		for (int j = 0; j < size; j++) {
-			if (i == j) {
-				g3[i][j] = 0;
-				continue;
-			}
-			g3[i][j] = g1[i][j] ^ g2[i][j];
+Graf Graf::operator=(Graf &other){
+	int minsize = min(Graf.size,other.size);
+	for (int i = 0, i < minsize; i++){
+	
+	}
+}
+
+void otojd(Graf g1, Graf g2, char p1, char p2){
+	for (int i = 0; i < g1.size; i++) {
+		for (int j = 0; j < g1.size; j++) {
+			
 		}
 	}
 }
 
-void printtwo(char** g1, char** g2, int size){
+void printtwo(Graf g1, Graf g2){
 
 	std::cout << std::endl;
-	for (int i = 0; i < size; i++) {
-		for (int j = 0; j < size; j++) {
-			if (i == j) std::cout << "\033[90m#\033[0m ";
-			else std::cout << (int)g1[i][j] << " ";
+	for (int i = 0; i < g1.size; i++) {
+		for (int j = 0; j < g1.size; j++) {
+			if (i == j) std::cout << "# ";
+			else std::cout << (int)g1.mass[i][j] << " ";
 		}
 		std::cout << std::endl;
 	}
-	std::cout << "\033["<< size <<"A";
-	std::cout << "\033[" << size*2 + 6 << "C";
+	std::cout << "\033["<< g1.size <<"A";
+	std::cout << "\033[" << g1.size*2 + 6 << "C";
 
-	for (int i = 0; i < size; i++) {
-		for (int j = 0; j < size; j++) {
-			if (i == j) std::cout << "\033[90m#\033[0m ";
-			else std::cout << (int)g2[i][j] << " ";
+	for (int i = 0; i < g2.size; i++) {
+		for (int j = 0; j < g2.size; j++) {
+			if (i == j) std::cout << "# ";
+			else std::cout << (int)g2.mass[i][j] << " ";
 		}
 		std::cout << std::endl;
-		std::cout << "\033[" << size*2 + 6 << "C";
+		std::cout << "\033[" << g2.size*2 + 6 << "C";
 	}
 
 
@@ -162,17 +170,33 @@ void printtwo(char** g1, char** g2, int size){
 
 int main() {
 	Graf graf[3];
-	int size;
+	char mode;
 	srand(time(NULL));
 
-//	cout << "Enter graf size: ";
-//	cin >> size;
-	size = 6;
-	graf[0].size = graf[1].size = graf[2].size = size;
+	cout << "Graphs will be the same size? Y\n";
+	cin >> mode;
+	switch (tolower(mode)){
+	case 'n':
+	case '2':{
+		cout << "Enter size of 1st graph: ";
+		cin >> graf[0].size;
+		cout << "Enter size of 2nd graph: ";
+		cin >> graf[1].size;
+		break;
+	}
+	default:{
+		int size;
+		cout << "Enter graph size: ";
+		cin >> size;	
+		graf[0].size = graf[1].size = graf[2].size = size;
+	}
+	}
+
+//	size = 6;
 	graf[0].init();
 	graf[1].init();
 	graf[2].init(0);
-	printtwo(graf[0].mass, graf[1].mass, size);
+	printtwo(graf[0], graf[1]);
 	cout << endl << "list of 1st matrix:" << endl;
 	for (int i = 0; i < size; i++) {
 		cout << i + 1 << ": ";
@@ -188,4 +212,6 @@ int main() {
 
 	graf[0].clear();
 	graf[1].clear();
+	getchar();
+	getchar();
 }
