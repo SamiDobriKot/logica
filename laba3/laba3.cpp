@@ -1,7 +1,8 @@
-﻿#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <conio.h>
 
 struct node
 {
@@ -41,12 +42,12 @@ struct node* get_struct(void)
 	printf("Введите приоритет объекта: \n");
 	if (scanf("%i", &prio) == 0) prio = 0;
 	p->priority = prio;
-	
+
 	p->next = NULL;
 
 	return p;		// возвращаем указатель на созданный элемент
 }
-
+//a 0 b 1 v 0 n 3 m 1 d 0 .
 void spstore(struct node* p)
 {
 	/*struct node* p = NULL;
@@ -62,19 +63,62 @@ void spstore(struct node* p)
 		while (search->priority > p->priority && search->next != NULL) {
 			search = search->next;
 		}
-		if (search == head && search->priority < p->priority) {
-			p->next = head;
-			head = p;
+		if (search == head) {
+			if (search->priority < p->priority) {
+				p->next = search;
+				head = p;
+				if (search->next == NULL) last = search;
+				return;
+			}
+			else {
+				struct node* temp = search->next;
+				search->next = p;
+				p->next = temp;
+				if (temp == NULL) last = p;
+				return;
+			}
+
+		}
+		if (search == last && search->priority > p->priority) {
+			search->next = p;
+			last = p;
 			return;
 		}
-		if (search->next == NULL){
-			last->next = p;
-			last = p;
+		struct node* prev = head;
+		while (prev->next != search) {
+			prev = prev->next;
 		}
-		else {
-			p->next = search->next;
-			search->next = p;
-		}
+		prev->next = p;
+		p->next = search;
+		return;
+		
+	
+
+
+
+
+		//if (search == head && search->priority > p->priority) {
+		//	p->next = head;
+		//	head = p;
+		//	return;
+		//}
+		//if (search->next == null) {
+		//	/*struct node* prev = head;
+		//	while (prev->next != search){
+		//		prev = prev->next;
+		//	}
+		//	prev->next = p;
+		//	p->next = search;
+		//	search->next = null;
+		//	last = search;
+		//	last->next = p;
+		//	last = p;*/
+		//	
+		//}
+		//else {
+		//	p->next = search->next;
+		//	search->next = p;
+		//}
 	}
 	return;
 }
@@ -179,6 +223,32 @@ int main() {
 	while (structura != NULL) {
 		spstore(structura);
 		structura = get_struct();
+		//review();
 	}
 	review();
+	char end = 0;
+	getchar();
+	while (end != 1) {
+		printf("\n1 - продолжить, 2 - удалить, 3 - вывод");
+		end = _getch();
+		switch (end) {
+		case '2': {
+			printf("\nВведите удаляемый элемент: ");
+			char search[265];
+			scanf("%s", search);
+			getchar();
+			del(search);
+			break;
+		}
+		case '3': {
+			printf("\n");
+			review();
+			break;
+		}
+		default: {
+			end = 1;
+			break;
+		}
+		}
+	}
 }
