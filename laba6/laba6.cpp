@@ -1,5 +1,5 @@
 #include <iostream>
-#include <time.h>
+#include <conio.h>
 using namespace std;
 
 class List {
@@ -42,14 +42,19 @@ class Graf {
 public:
 	char** mass;
 	int size;
-	int grafsize;
+	int grafsize = 0;
 	char** incid;
 	List* list;
 
-	Graf() {
-		grafsize = 0;
+	Graf() {};
+
+	Graf(int yoursize) : size(yoursize) {
+		mass = new char* [size];
+		for (int i = 0; i < size; i++) {
+			mass[i] = new char[size];
+		}
 	}
-	Graf operator=(Graf &other);
+
 	void init(char yesno = 1) {
 		mass = new char* [size];
 		for (int i = 0; i < size; i++) {
@@ -87,19 +92,11 @@ public:
 	void print() {
 		cout << endl;
 		for (int i = 0; i < size; i++) {
-	//		int count = 0;
 			for (int j = 0; j < size; j++) {
-				if (i == j) cout << "# ";
-				else cout << (int)mass[i][j] << " ";
-	//			count += mass[i][j];
+				cout << (int)mass[i][j] << " ";
 			}
-	//		if (count == 0) cout << "Isolated";
-	//		if (count == 1) cout << "Alone";
-	//		if (count == size - 1) cout << "Dominating";
-
 			cout << endl;
 		}
-	//	cout << "Graf size:" << grafsize << endl;
 	}
 
 	void printincid() {
@@ -127,91 +124,164 @@ public:
 	}
 };
 
-Graf Graf::operator=(Graf &other){
-	int minsize = min(Graf.size,other.size);
-	for (int i = 0, i < minsize; i++){
-	
+Graf otojd(Graf g1, char p1, char p2) {
+	Graf graph(g1.size - 1);
+	{
+		short temp = min(p1, p2);
+		p1 = max(p1, p2);
+		p2 = p1;
+		p1 = temp;
 	}
-}
-
-void otojd(Graf g1, Graf g2, char p1, char p2){
-	for (int i = 0; i < g1.size; i++) {
-		for (int j = 0; j < g1.size; j++) {
-			
+	int k, l;
+	k = l = 0;
+	for (int j = 0; j < graph.size; j++) {
+		for (int i = 0; i < graph.size; i++) {
+			if (j == p1) graph.mass[p1][i] = graph.mass[i][p1] = (g1.mass[p1][k] == 1 || g1.mass[p2][k] == 1) ? 1 : 0;
+			else graph.mass[j][i] = graph.mass[i][j] = g1.mass[l][k];
+			k += (i != p2-1) ? 1 : 2;
 		}
+		l += (j != p2-1) ? 1 : 2;
+		k = 0;
 	}
+	return graph;
 }
 
-void printtwo(Graf g1, Graf g2){
+Graf styag(Graf g1, char p1, char p2) {
+	Graf graph(g1.size - 1);
+	{
+		short temp = min(p1, p2);
+		p1 = max(p1, p2);
+		p2 = p1;
+		p1 = temp;
+	}
+	int k, l;
+	k = l = 0;
+	for (int j = 0; j < graph.size; j++) {
+		for (int i = 0; i < graph.size; i++) {
+			if (j == p1) graph.mass[p1][i] = graph.mass[i][p1] = (g1.mass[p1][k] == 1 || g1.mass[p2][k] == 1) ? 1 : 0;
+			if (j == p1 && j == i) graph.mass[j][i] = 0;
+			else graph.mass[j][i] = graph.mass[i][j] = g1.mass[l][k];
+			k += (i != p2 - 1) ? 1 : 2;
+		}
+		l += (j != p2 - 1) ? 1 : 2;
+		k = 0;
+	}
+	return graph;
+}
+
+void printtwo(Graf g1, Graf g2) {
 
 	std::cout << std::endl;
 	for (int i = 0; i < g1.size; i++) {
 		for (int j = 0; j < g1.size; j++) {
-			if (i == j) std::cout << "# ";
+			if (i == j) std::cout << "\033[90m#\033[0m ";
 			else std::cout << (int)g1.mass[i][j] << " ";
 		}
 		std::cout << std::endl;
 	}
-	std::cout << "\033["<< g1.size <<"A";
-	std::cout << "\033[" << g1.size*2 + 6 << "C";
+	std::cout << "\033[" << g1.size << "A";
+	std::cout << "\033[" << g1.size * 2 + 6 << "C";
 
 	for (int i = 0; i < g2.size; i++) {
 		for (int j = 0; j < g2.size; j++) {
-			if (i == j) std::cout << "# ";
-			else std::cout << (int)g2.mass[i][j] << " ";
+			if (i == j) std::cout << "\033[90m#\033[0m "; else
+			std::cout << (int)g2.mass[i][j] << " ";
 		}
 		std::cout << std::endl;
-		std::cout << "\033[" << g2.size*2 + 6 << "C";
+		std::cout << "\033[" << g1.size * 2 + 6 << "C";
 	}
-
-
+	if (g2.size < g1.size) std::cout << "\033[" << g1.size - g2.size << "B";
 }
 
 
 int main() {
+	system("chcp 1251");
 	Graf graf[3];
-	char mode;
-	srand(time(NULL));
+//	srand(time(NULL));
 
-	cout << "Graphs will be the same size? Y\n";
-	cin >> mode;
-	switch (tolower(mode)){
+	cout << "Graphs will be the same size? Y\\n\n";
+	char mode = _getch();
+	switch (tolower(mode)) {
 	case 'n':
-	case '2':{
+	case '2': {
 		cout << "Enter size of 1st graph: ";
 		cin >> graf[0].size;
 		cout << "Enter size of 2nd graph: ";
 		cin >> graf[1].size;
 		break;
 	}
-	default:{
+	default: {
 		int size;
 		cout << "Enter graph size: ";
-		cin >> size;	
+		cin >> size;
 		graf[0].size = graf[1].size = graf[2].size = size;
 	}
 	}
 
-//	size = 6;
+	//	size = 6;
 	graf[0].init();
 	graf[1].init();
-	graf[2].init(0);
 	printtwo(graf[0], graf[1]);
-	cout << endl << "list of 1st matrix:" << endl;
-	for (int i = 0; i < size; i++) {
-		cout << i + 1 << ": ";
-		graf[0].list[i].print();
+	bool end = true;
+	bool islist = false;
+	while (end){
+		cout << "\nWhat to do?\n1 - закончить, 2 - переключиться на списки, 3 - отождествление, 4 - стягивание, 5 - расщепления вершины\n";
+		mode = _getch();
+		switch (mode) {
+		case '1':{
+			end = 0;
+			break;
+		}
+		case '2': {
+			islist = true;
+			cout << endl << "list of 1st matrix:" << endl;
+			for (int i = 0; i < graf[0].size; i++) {
+				cout << i + 1 << ": ";
+				graf[0].list[i].print();
+			}
+			cout << endl << "list of 2nd matrix:" << endl;
+			for (int i = 0; i < graf[1].size; i++) {
+				cout << i + 1 << ": ";
+				graf[1].list[i].print();
+			}
+			break;
+		}
+		case '3': {
+			short pick,p1,p2;
+			if (islist) {
+			}
+			else {
+				cout << "Выберите с какой матрицей работать (1/2): ";
+				cin >> pick;
+				cout << "\nВыберите два узла: ";
+				cin >> p1 >> p2;
+				graf[2] = otojd(graf[pick-1], p1-1, p2-1);
+				graf[2].print();
+				graf[2].clear();
+			}
+			break;
+		}
+		case '4': {
+			short pick, p1, p2;
+			if (islist) {
+			}
+			else {
+				cout << "Выберите с какой матрицей работать (1/2): ";
+				cin >> pick;
+				cout << "\nВыберите два узла: ";
+				cin >> p1 >> p2;
+				graf[2] = styag(graf[pick - 1], p1 - 1, p2 - 1);
+				graf[2].print();
+				graf[2].clear();
+			}
+			break;
+		}
+		}
+		
+		
+		
 	}
-	cout << endl << "list of 2nd matrix:" << endl;
-	for (int i = 0; i < size; i++) {
-		cout << i + 1 << ": ";
-		graf[1].list[i].print();
-	}
-	otojd(graf[0].mass, graf[1].mass, graf[2].mass, size);
-	graf[2].print();
 
 	graf[0].clear();
 	graf[1].clear();
-	getchar();
-	getchar();
 }
