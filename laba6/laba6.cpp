@@ -169,6 +169,28 @@ Graf styag(Graf g1, char p1, char p2) {
 	return graph;
 }
 
+Graf rasch(Graf g1, char p) {
+	Graf graph(g1.size + 1);
+	int k, l;
+	k = l = 0;
+	for (int j = 0; j < g1.size; j++) {
+		if (j == p) k++;
+		for (int i = 0; i < g1.size; i++) {
+			if (i == p) { 
+				l++;
+
+			}
+			if (j == p) {
+				
+			}
+			else graph.mass[j + k][i + l] = g1.mass[j][i];
+			
+		}
+		l = 0;
+	}
+	return graph;
+}
+
 void printtwo(Graf g1, Graf g2) {
 
 	std::cout << std::endl;
@@ -271,6 +293,21 @@ int main() {
 				cout << "\nВыберите два узла: ";
 				cin >> p1 >> p2;
 				graf[2] = styag(graf[pick - 1], p1 - 1, p2 - 1);
+				graf[2].print();
+				graf[2].clear();
+			}
+			break;
+		}
+		case '5': {
+			short pick, p;
+			if (islist) {
+			}
+			else {
+				cout << "Выберите с какой матрицей работать (1/2): ";
+				cin >> pick;
+				cout << "\nВыберите узел: ";
+				cin >> p;
+				graf[2] = rasch(graf[pick - 1], p - 1);
 				graf[2].print();
 				graf[2].clear();
 			}
