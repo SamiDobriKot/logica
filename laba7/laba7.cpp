@@ -188,11 +188,11 @@ int main() {
 	graf.init();
 	graf.print();
 	graf.printincid();
-	cout << endl << "Îáõîä ìàòğèöû ñìåæíîñòè: " << endl;
+	cout << endl << "ÃÃ¡ÃµÃ®Ã¤ Ã¬Ã Ã²Ã°Ã¨Ã¶Ã» Ã±Ã¬Ã¥Ã¦Ã­Ã®Ã±Ã²Ã¨: " << endl;
 	graf.obhod();
-	cout << endl << "Îáõîä ìàòğèöû èíöèäåíòíîñòè: " << endl;
+	cout << endl << "ÃÃ¡ÃµÃ®Ã¤ Ã¬Ã Ã²Ã°Ã¨Ã¶Ã» Ã¨Ã­Ã¶Ã¨Ã¤Ã¥Ã­Ã²Ã­Ã®Ã±Ã²Ã¨: " << endl;
 	graf.obhod(true);
-	cout << endl << "Îáõîä áåç ğåêóğñèè: " << endl;
+	cout << endl << "ÃÃ¡ÃµÃ®Ã¤ Ã¡Ã¥Ã§ Ã°Ã¥ÃªÃ³Ã°Ã±Ã¨Ã¨: " << endl;
 	graf.obhodnorec();
 
 	
