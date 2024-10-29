@@ -1,5 +1,6 @@
 #include <iostream>
 #include <conio.h>
+#include <time.h>
 using namespace std;
 
 class Set {
@@ -40,10 +41,12 @@ class Graf {
 public:
 	char** mass;
 	int size;
-	int grafsize = 0;
+	int grafsize;
 	char** incid;
 
-	Graf() {};
+	Graf() {
+		grafsize = 0;
+	};
 
 	Graf(int yoursize) : size(yoursize) {
 		mass = new char* [size];
@@ -86,7 +89,7 @@ public:
 		cout << endl;
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				if (i == j) cout << "\033[90m#\033[0m "; else
+				if (i == j) cout << "# "; else
 				cout << (int)mass[i][j] << " ";
 			}
 			cout << endl;
@@ -114,18 +117,21 @@ public:
 		delete(incid);
 	}
 
-	void obhod(bool isincid = false) {
+	void obhod(int start = 0,bool isincid = false) {
 		Set set(size);
 		
+		if (isincid == false) DFS(start, set); 
+		else DFSINCID(start, set);
+
 		while (!set.all()) {
 			if (isincid == false) DFS(set.firstfalse(), set);
 			else DFSINCID(set.firstfalse(), set);
 		}
 	}
 
-	void obhodnorec() {
+	void obhodnorec(int start = 0) {
 		Set set(size);
-		int r = 0, prev = 0;
+		int r = start, prev = 0, a = 0;
 		bool end = false;
 
 		while (!set.all()) {
@@ -133,22 +139,20 @@ public:
 			for (int i = 0; i < size; i++) {
 				if (set.add(r)) cout << r + 1 << " " << ends;
 				if (mass[r][i] == 1 && set.data[i] == false) {
-					prev = r;
 					r = i;
 					end = true;
 					break;
 				}
 			}
-			if (!end) {
-				if (r != prev) r = prev;
-				else {
-					for (int i = prev - 1; i > 0; i--) {
-						if (set.data[i]) {
-							prev = i;
+			if (!end) {	
+				for (int i = 0;i<size; i++){
+					if (mass[r][i] == 1){
+							r = i;
 							break;
 						}
-					}
-				}
+						
+					} 
+				r = set.firstfalse();
 			}
 		}
 	}
@@ -182,20 +186,25 @@ int main() {
 	system("chcp 1251");
 	Graf graf;
 	srand(time(NULL)); 
+//	srand(1);
 
 	std::cout << "Enter graf size: ";
 	std::cin >> graf.size;
 	graf.init();
 	graf.print();
 	graf.printincid();
-	cout << endl << "ÃŽÃ¡ÃµÃ®Ã¤ Ã¬Ã Ã²Ã°Ã¨Ã¶Ã» Ã±Ã¬Ã¥Ã¦Ã­Ã®Ã±Ã²Ã¨: " << endl;
-	graf.obhod();
-	cout << endl << "ÃŽÃ¡ÃµÃ®Ã¤ Ã¬Ã Ã²Ã°Ã¨Ã¶Ã» Ã¨Ã­Ã¶Ã¨Ã¤Ã¥Ã­Ã²Ã­Ã®Ã±Ã²Ã¨: " << endl;
-	graf.obhod(true);
-	cout << endl << "ÃŽÃ¡ÃµÃ®Ã¤ Ã¡Ã¥Ã§ Ã°Ã¥ÃªÃ³Ã°Ã±Ã¨Ã¨: " << endl;
-	graf.obhodnorec();
-
+	cout << "\nÂâåäèòå íà÷àëüíóþ âåðøèíó: " << endl;
+	int p;
+	cin >> p;
+	p--;
+	cout << endl << "Îáõîä ìàòðèöû ñìåæíîñòè: " << endl;
+	graf.obhod(p);
+	cout << endl << "Îáõîä ìàòðèöû èíöèäåíòíîñòè: " << endl;
+	graf.obhod(p, true);
+	cout << endl << "Îáõîä áåç ðåêóðñèè: " << endl;
+	graf.obhodnorec(p);
+	getchar();
+	getchar();
 	
-
 	graf.clear();
 }
