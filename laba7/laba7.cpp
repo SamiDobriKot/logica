@@ -1,6 +1,5 @@
 #include <iostream>
 #include <conio.h>
-#include <time.h>
 using namespace std;
 
 class Set {
@@ -9,7 +8,7 @@ private:
 
 public:
 	bool* data;
-	
+
 	Set() {};
 
 	Set(int size) {
@@ -37,12 +36,49 @@ public:
 
 };
 
+class List {
+public:
+	int data;
+	List* next;
+
+	List() {
+		data = NULL;
+		next = nullptr;
+	};
+	List(int value) : data(value), next(nullptr) {};
+
+	~List() {
+		delete next;
+	};
+
+	void add(int value) {
+		if (data == NULL) {
+			data = value;
+			return;
+		}
+		if (next == nullptr) {
+			next = new List(value);
+		}
+		else next->add(value);
+	}
+	void print() {
+		cout << data << " ";
+		if (next != nullptr) next->print();
+		else {
+			cout << endl;
+			return;
+		}
+	};
+
+};
+
 class Graf {
 public:
 	char** mass;
 	int size;
 	int grafsize;
 	char** incid;
+	List* list;
 
 	Graf() {
 		grafsize = 0;
@@ -61,12 +97,15 @@ public:
 			mass[i] = new char[size];
 		}
 		if (yesno = 1) {
+			list = new List[size];
 			for (int i = 0; i < size; i++) {
 				for (int j = i; j < size; j++) {
 					if (i == j) mass[i][j] = 0;
 					else mass[i][j] = mass[j][i] = rand() % 2;
 					if (mass[i][j]) {
 						grafsize++;
+						list[i].add(j + 1);
+						list[j].add(i + 1);
 					}
 				}
 			}
@@ -89,8 +128,8 @@ public:
 		cout << endl;
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				if (i == j) cout << "# "; else
-				cout << (int)mass[i][j] << " ";
+				if (i == j) cout << "\033[90m#\033[0m "; else
+					cout << (int)mass[i][j] << " ";
 			}
 			cout << endl;
 		}
@@ -117,15 +156,25 @@ public:
 		delete(incid);
 	}
 
-	void obhod(int start = 0,bool isincid = false) {
+	void obhod(int start = 0, bool isincid = false) {
 		Set set(size);
-		
-		if (isincid == false) DFS(start, set); 
+
+		if (isincid == false) DFS(start, set);
 		else DFSINCID(start, set);
 
 		while (!set.all()) {
 			if (isincid == false) DFS(set.firstfalse(), set);
 			else DFSINCID(set.firstfalse(), set);
+		}
+	}
+
+	void obhodlist(int start = 0) {
+		Set set(size);
+
+		DFSLIST(start, set);
+
+		while (!set.all()) {
+			DFSLIST(set.firstfalse(), set);
 		}
 	}
 
@@ -144,14 +193,14 @@ public:
 					break;
 				}
 			}
-			if (!end) {	
-				for (int i = 0;i<size; i++){
-					if (mass[r][i] == 1){
-							r = i;
-							break;
-						}
-						
-					} 
+			if (!end) {
+				for (int i = 0; i < size; i++) {
+					if (mass[r][i] == 1) {
+						r = i;
+						break;
+					}
+
+				}
 				r = set.firstfalse();
 			}
 		}
@@ -160,7 +209,7 @@ public:
 private:
 	void DFS(int v, Set set) {
 		set.add(v);
-		cout << v+1<< " " << ends;
+		cout << v + 1 << " " << ends;
 		for (int i = 0; i < size; i++) {
 			if (mass[v][i] == 1 && set.data[i] == false) DFS(i, set);
 		}
@@ -170,7 +219,7 @@ private:
 		set.add(v);
 		cout << v + 1 << " " << ends;
 		int r = 0;
-		for (int i = 0; i < grafsize; i++) 
+		for (int i = 0; i < grafsize; i++)
 			if (incid[v][i] == 1) {
 				r = i;
 				break;
@@ -179,6 +228,17 @@ private:
 			if (incid[i][r] == 1 && set.data[i] == false) DFSINCID(i, set);
 		}
 	}
+
+	void DFSLIST(int v, Set set) {
+		set.add(v);
+		cout << v + 1 << " " << ends;
+		List* temp = &list[v];
+		while (temp!= nullptr) {
+			if (set.data[temp->data - 1] == false) DFSLIST(temp->data - 1, set);
+			else temp = temp->next;
+		}
+
+	}
 };
 
 
@@ -186,25 +246,32 @@ int main() {
 	system("chcp 1251");
 	Graf graf;
 	srand(time(NULL)); 
-//	srand(1);
 
 	std::cout << "Enter graf size: ";
 	std::cin >> graf.size;
 	graf.init();
 	graf.print();
 	graf.printincid();
-	cout << "\nВведите начальную вершину: " << endl;
+	cout << endl;
+	for (int i = 0; i < graf.size; i++) {
+		cout << i+1 << ": "; 
+		graf.list[i].print();
+	}
+	cout << endl;
+	cout << "Введите начальную вершину: " << endl;
 	int p;
 	cin >> p;
 	p--;
 	cout << endl << "Обход матрицы смежности: " << endl;
 	graf.obhod(p);
 	cout << endl << "Обход матрицы инцидентности: " << endl;
-	graf.obhod(p, true);
+	graf.obhod(p,true);
+	cout << endl << "Обход списка: " << endl;
+	graf.obhodlist(p);
 	cout << endl << "Обход без рекурсии: " << endl;
 	graf.obhodnorec(p);
-	getchar();
-	getchar();
+
 	
+
 	graf.clear();
 }
