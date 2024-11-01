@@ -72,21 +72,8 @@ public:
 						list[j].add(i + 1);
 					}
 				}
-				//			list[i].print();
 			}
 		}
-		/*incid = new char* [size];
-		for (int i = 0; i < size; i++) {
-			incid[i] = new char[grafsize];
-		}
-		int s = 0;
-		for (int i = 0; i < size; i++) {
-			for (int j = i; j < size; j++) {
-				if (mass[i][j] == 0) continue;
-				for (int k = 0; k < size; k++) (k == i) || (k == j) ? incid[k][s] = 1 : incid[k][s] = 0;
-				s++;
-			}
-		}*/
 	}
 
 	void print() {
@@ -99,28 +86,11 @@ public:
 		}
 	}
 
-	void printincid() {
-		std::cout << std::endl;
-		for (int i = 0; i < size; i++) {
-			int count = 0;
-			for (int j = 0; j < grafsize; j++) {
-				std::cout << (int)incid[i][j] << " ";
-				count += incid[i][j];
-			}
-			if (count == 0) std::cout << "Isolated";
-			if (count == 1) std::cout << "Alone";
-			if (count == size - 1) std::cout << "Dominating";
-			std::cout << std::endl;
-		}
-	}
-
 	void clear() {
 		for (int i = 0; i < size; i++) {
 			delete(mass[i]);
-		//	delete(incid[i]);
 		}
 		delete(mass);
-		//delete(incid);
 	}
 };
 
@@ -171,22 +141,14 @@ Graf styag(Graf g1, char p1, char p2) {
 
 Graf rasch(Graf g1, char p) {
 	Graf graph(g1.size + 1);
-	int k, l;
-	k = l = 0;
-	for (int j = 0; j < g1.size; j++) {
-		if (j == p) k++;
-		for (int i = 0; i < g1.size; i++) {
-			if (i == p) { 
-				l++;
-
+	for (int j = 0; j < graph.size; j++) {
+		for (int i = j; i < graph.size; i++) {
+			if (i == graph.size - 1) {
+				graph.mass[j][i] = graph.mass[i][j] = graph.mass[j][p];
+				if (i == j == graph.size - 1) graph.mass[j][i] = 0;
 			}
-			if (j == p) {
-				
-			}
-			else graph.mass[j + k][i + l] = g1.mass[j][i];
-			
+			else graph.mass[j][i] = graph.mass[i][j] = g1.mass[i][j];
 		}
-		l = 0;
 	}
 	return graph;
 }
@@ -247,7 +209,10 @@ int main() {
 	bool end = true;
 	bool islist = false;
 	while (end){
-		cout << "\nWhat to do?\n1 - закончить, 2 - переключиться на списки, 3 - отождествление, 4 - стягивание, 5 - расщепления вершины\n";
+		if (!islist) cout << "\nWhat to do?\n1 - закончить, 2 - переключиться на списки, 3 - отождествление, 4 - стягивание, 5 - расщепления вершины\n\
+6 - объеденение, 7 - пересечение, 8 - кольцевая сумма, 9 - декартово произведение\n ";
+		else cout << "\nWhat to do?\n1 - закончить, 2 - переключиться на графы, 3 - отождествление, 4 - стягивание, 5 - расщепления вершины\n\
+6 - объеденение, 7 - пересечение, 8 - кольцевая сумма, 9 - декартово произведение\n ";
 		mode = _getch();
 		switch (mode) {
 		case '1':{
@@ -255,16 +220,22 @@ int main() {
 			break;
 		}
 		case '2': {
-			islist = true;
-			cout << endl << "list of 1st matrix:" << endl;
-			for (int i = 0; i < graf[0].size; i++) {
-				cout << i + 1 << ": ";
-				graf[0].list[i].print();
+			if (islist) {
+				islist = false;
+				printtwo(graf[0], graf[1]);
 			}
-			cout << endl << "list of 2nd matrix:" << endl;
-			for (int i = 0; i < graf[1].size; i++) {
-				cout << i + 1 << ": ";
-				graf[1].list[i].print();
+			else{
+				islist = true;
+				cout << endl << "list of 1st matrix:" << endl;
+				for (int i = 0; i < graf[0].size; i++) {
+					cout << i + 1 << ": ";
+					graf[0].list[i].print();
+				}
+				cout << endl << "list of 2nd matrix:" << endl;
+				for (int i = 0; i < graf[1].size; i++) {
+					cout << i + 1 << ": ";
+					graf[1].list[i].print();
+				}
 			}
 			break;
 		}
@@ -292,6 +263,10 @@ int main() {
 				cin >> pick;
 				cout << "\nВыберите два узла: ";
 				cin >> p1 >> p2;
+				while (graf->mass[p1][p2] != 1) {
+					cout << "\nВыбраны неверные узлы.\n";
+					cin >> p1 >> p2;
+				}
 				graf[2] = styag(graf[pick - 1], p1 - 1, p2 - 1);
 				graf[2].print();
 				graf[2].clear();
@@ -312,6 +287,9 @@ int main() {
 				graf[2].clear();
 			}
 			break;
+		}
+		case '6': {
+			
 		}
 		}
 		
