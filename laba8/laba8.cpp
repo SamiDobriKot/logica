@@ -1,4 +1,5 @@
 #include <iostream>
+#include <time.h>
 #include <queue>
 #include <conio.h>
 using namespace std;
@@ -103,10 +104,12 @@ class Graf {
 public:
 	char** mass;
 	int size;
-	int grafsize = 0;
+	int grafsize;
 	List* list;
 
-	Graf() {};
+	Graf() {
+		grafsize = 0;
+	};
 
 	Graf(int yoursize) : size(yoursize) {
 		mass = new char* [size];
@@ -127,9 +130,11 @@ public:
 					if (i == j) mass[i][j] = 0;
 					else mass[i][j] = mass[j][i] = rand() % 2;
 					if (mass[i][j]) {
+						mass[i][j] -= 2 * (rand() % 2 );
+						mass[j][i] = mass[i][j] * -1;
 						grafsize++;
-						list[i].add(j + 1);
-						list[j].add(i + 1);
+						if (mass[i][j] > 0 ) list[i].add(j + 1);
+						else list[j].add(i + 1);
 					}
 				}
 			}
@@ -140,7 +145,7 @@ public:
 		cout << endl;
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				cout << (int)mass[i][j] << " ";
+				printf("%2i", mass[i][j]);
 			}
 			cout << endl;
 		}
